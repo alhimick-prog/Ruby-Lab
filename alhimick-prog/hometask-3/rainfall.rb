@@ -15,10 +15,7 @@ CURRENT_FILE = 'data.txt'
 def file_reader(filename)
   if File.exist?(filename)
     file = File.new(filename, 'r')
-    file.sysread(file.size)
-    # I know i could use a method .readlines to get an array from file,
-    # but in the condition of assignment
-    # data is passed to methods 'mean' and 'variance' as a string.
+    file.read(file.size)
   else
     puts ERROR_FILE_READ_FAIL
     exit
@@ -36,12 +33,22 @@ def ending_search_point(start_search_pos, strng)
 end
 
 def form_array(town, strng)
-  return nil unless town_pos(town, strng)
-
-  start_search_pos = town_pos(town, strng) + town.size + 1
-  ending_search_pos = ending_search_point(start_search_pos, strng)
-  strng[start_search_pos..ending_search_pos].scan(/\d+\.*\d*/).map(&:to_f)
+  array = nil
+  strng.each_line do |line|
+    if line.match(/^#{town}:/)
+      array = line.scan(/\d+\.*\d*/).map(&:to_f)
+    end
+  end
+  array
 end
+
+#def form_array(town, strng)
+#  return nil unless town_pos(town, strng)
+#
+#  start_search_pos = town_pos(town, strng) + town.size + 1
+#  ending_search_pos = ending_search_point(start_search_pos, strng)
+#  strng[start_search_pos..ending_search_pos].scan(/\d+\.*\d*/).map(&:to_f)
+#end
 
 def mean(town, strng)
   array = form_array(town, strng)
